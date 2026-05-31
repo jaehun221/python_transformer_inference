@@ -1,1 +1,5 @@
-# tokenizer 함수 작성 파일, 핵심 로직 구현 후로 미뤄도 상관 없음
+from transformers import GPT2TokenizerFast
+
+
+def load_tokenizer(model_dir: str) -> GPT2TokenizerFast:
+    return GPT2TokenizerFast.from_pretrained(model_dir)
