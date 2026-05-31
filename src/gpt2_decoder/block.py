@@ -7,6 +7,7 @@ from gpt2_decoder.config import GPT2Config
 from gpt2_decoder.layers import LayerNorm, Linear
 from gpt2_decoder.tensor import gelu_new
 
+from gpt2_decoder.cache import KVCache
 
 @dataclass
 class MLP:
@@ -80,18 +81,27 @@ class GPT2Block:
             ),
         )
 
-    def forward(self, x: np.ndarray) -> np.ndarray:
+    def forward(
+        self,
+        x: np.ndarray,
+        cache: KVCache | None = None,
+        layer_idx: int | None = None,
+    ) -> np.ndarray:
         # x:      [T, C]
         # return: [T, C]
 
-        residual = x                         # [T, C]
-        x = self.ln_1.forward(x)             # [T, C]
-        x = self.attn.forward(x)             # [T, C]
-        x = residual + x                     # [T, C]
+        residual = x
+        x = self.ln_1.forward(x)
+        x = self.attn.forward(
+            x,
+            cache=cache,
+            layer_idx=layer_idx,
+        )
+        x = residual + x
 
-        residual = x                         # [T, C]
-        x = self.ln_2.forward(x)             # [T, C]
-        x = self.mlp.forward(x)              # [T, C]
-        x = residual + x                     # [T, C]
+        residual = x
+        x = self.ln_2.forward(x)
+        x = self.mlp.forward(x)
+        x = residual + x
 
         return x
