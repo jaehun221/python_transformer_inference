@@ -16,6 +16,7 @@ class KVCache:
         self.key_cache = [None for _ in range(self.n_layer)]
         self.value_cache = [None for _ in range(self.n_layer)]
 
+
     def get(
         self,
         layer_idx: int,
@@ -24,6 +25,7 @@ class KVCache:
         # key:   None or [H, S, D]
         # value: None or [H, S, D]
         return self.key_cache[layer_idx], self.value_cache[layer_idx]
+
 
     def append(
         self,
@@ -37,8 +39,7 @@ class KVCache:
         # key_total:   [H, S + T_new, D]
         # value_total: [H, S + T_new, D]
 
-        old_key = self.key_cache[layer_idx]
-        old_value = self.value_cache[layer_idx]
+        old_key, old_value = self.get(layer_idx)
 
         if old_key is None:
             new_key = key
@@ -61,7 +62,10 @@ class KVCache:
 
         return key.shape[1]
 
+
     def reset(self):
+        # Currently unused because each generation creates a new KVCache.
+        # Keep this for cases where one cache object is reused across prompts.
         for i in range(self.n_layer):
             self.key_cache[i] = None
             self.value_cache[i] = None

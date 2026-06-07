@@ -7,7 +7,7 @@ from gpt2_decoder.tensor import linear, layer_norm
 
 @dataclass
 class Embedding:
-    # weight: [N, C]
+    # weight: [num_embeddings, C]
     weight: np.ndarray
 
     def forward(self, input_ids: np.ndarray) -> np.ndarray:

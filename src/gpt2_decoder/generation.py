@@ -10,12 +10,13 @@ def greedy_generate(
     eos_token_id: int | None = None,
 ) -> np.ndarray:
     # input_ids: [T]
-    # return:    [T + max_new_tokens] or shorter if eos appears
+    # return:    [T + num_generated_tokens]
+    # num_generated_tokens <= max_new_tokens
 
     generated = input_ids.copy()  # [T]
 
     for _ in range(max_new_tokens):
-        logits = model.forward(generated)  # [cur_T, vocab_size]
+        logits = model.forward(generated)  # [len(generated), vocab_size]
 
         next_token_logits = logits[-1]  # [vocab_size]
 
@@ -23,7 +24,7 @@ def greedy_generate(
 
         next_token = np.array([next_token_id], dtype=generated.dtype)  # [1]
 
-        generated = np.concatenate([generated, next_token], axis=0)  # [cur_T + 1]
+        generated = np.concatenate([generated, next_token], axis=0)  # length + 1
 
         if eos_token_id is not None and next_token_id == eos_token_id:
             break
@@ -38,7 +39,8 @@ def greedy_generate_cached(
     eos_token_id: int | None = None,
 ) -> np.ndarray:
     # input_ids: [T]
-    # return:    [T + max_new_tokens] or shorter if eos appears
+    # return:    [T + num_generated_tokens]
+    # num_generated_tokens <= max_new_tokens
 
     generated = input_ids.copy()  # [T]
 
@@ -55,12 +57,12 @@ def greedy_generate_cached(
 
     for _ in range(max_new_tokens):
         next_token = np.array([next_token_id], dtype=generated.dtype)  # [1]
-        generated = np.concatenate([generated, next_token], axis=0)
+        generated = np.concatenate([generated, next_token], axis=0)  # length + 1
 
         if eos_token_id is not None and next_token_id == eos_token_id:
             break
 
-        start_pos = generated.shape[0] - 1
+        start_pos = cache.seq_len(0)
 
         logits = model.forward_with_cache(
             input_ids=next_token,

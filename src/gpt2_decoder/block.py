@@ -32,6 +32,7 @@ class MLP:
                 bias=weights[f"{prefix}.c_proj.bias"],
             ),
         )
+    
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         # x:      [T, C]
@@ -80,6 +81,7 @@ class GPT2Block:
                 layer_idx=layer_idx,
             ),
         )
+
 
     def forward(
         self,

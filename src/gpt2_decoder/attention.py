@@ -69,7 +69,7 @@ class CausalSelfAttention:
         # return: [T, C]
         T, C = x.shape
         H = self.config.n_head
-        D = C // H
+        D = self.config.head_dim()
 
         qkv = self.c_attn.forward(x)  # [T, 3C]
 

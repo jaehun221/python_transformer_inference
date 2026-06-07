@@ -19,7 +19,9 @@ class GPT2Config:
     def head_dim(self) -> int:
         return self.n_embd // self.n_head
 
-    def intermadiate_size(self) -> int:
+    def intermediate_size(self) -> int:
+        # Currently unused because MLP layers use loaded weight shapes directly.
+        # Keep this to document GPT-2's C -> 4C -> C MLP width.
         return 4 * self.n_embd
 
 
